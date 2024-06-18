@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -12,9 +13,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Threading;
 using System.Runtime.Remoting.Contexts;
 using System.Windows.Controls.Primitives;
+using System.Windows.Threading;
 
 namespace _15_TASK
 {
@@ -23,6 +24,7 @@ namespace _15_TASK
     /// </summary>
     public partial class MainWindow : Window
     {
+        DispatcherTimer timer = new DispatcherTimer();
 
         public MainWindow()
         {
@@ -38,7 +40,6 @@ namespace _15_TASK
                 MessageBox.Show("Connection to DB is successfully");
                 return;
             }
-            //Parallel.Invoke(ConnectionToDB, SetPing);
 
             stateTrack.Text = "Start conncetion to DB";
 
@@ -47,13 +48,14 @@ namespace _15_TASK
             await Task.Delay(5000);
             Connection_Button.IsEnabled = true;
             Disconnet_Button.IsEnabled = true;
-            //Thread.Sleep(5000);
 
             stateTrack.Text = "Connection to the database has been established";
+            StartTimer();
         }
 
         private async void Disconnet_Button_Click(object sender, RoutedEventArgs e)
         {
+            StopTimer();
             string stateText = stateTrack.Text;
             if (stateText == "Connect to DB to track connection state" || stateText == "Connection to the database has been closed")
             {
@@ -71,17 +73,19 @@ namespace _15_TASK
 
             stateTrack.Text = "Connection to the database has been closed";
         }
-
-
-
-
-        //void SetPing()
-        //{
-        //    Thread.Sleep(5000);
-        //}
-        //void ConnectionToDB()
-        //{
-        //    MessageBox.Show($"Start connecting to DB");
-        //}
+        private void StartTimer()
+        {
+            timer.Interval = TimeSpan.FromSeconds(3);
+            timer.Tick += TimerTick;
+            timer.Start();
+        }
+        private void TimerTick(object sender, EventArgs e)
+        {
+            stateTrack.Text = "Data received";
+        }
+        private void StopTimer()
+        {
+            timer.Stop();
+        }
     }
 }
