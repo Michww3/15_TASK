@@ -35,27 +35,19 @@ namespace _15_TASK
         {
             string stateText = stateTrack.Text;
 
-            if (stateText == "Connection to the database has been established")
+            if (stateText == "Connection to the database has been established" || stateText == "Data received")
             {
                 MessageBox.Show("Connection to DB is successfully");
                 return;
             }
 
-            stateTrack.Text = "Start conncetion to DB";
-
-            Connection_Button.IsEnabled = false;
-            Disconnet_Button.IsEnabled = false;
-            await Task.Delay(5000);
-            Connection_Button.IsEnabled = true;
-            Disconnet_Button.IsEnabled = true;
-
+            await TaskDelay("Start conncetion to DB");
             stateTrack.Text = "Connection to the database has been established";
             StartTimer();
         }
 
         private async void Disconnet_Button_Click(object sender, RoutedEventArgs e)
         {
-            StopTimer();
             string stateText = stateTrack.Text;
             if (stateText == "Connect to DB to track connection state" || stateText == "Connection to the database has been closed")
             {
@@ -63,16 +55,11 @@ namespace _15_TASK
                 return;
             }
 
-            stateTrack.Text = "Start disconnection from DB";
-
-            Connection_Button.IsEnabled = false;
-            Disconnet_Button.IsEnabled = false;
-            await Task.Delay(5000);
-            Connection_Button.IsEnabled = true;
-            Disconnet_Button.IsEnabled = true;
-
+            StopTimer();
+            await TaskDelay("Start disconnection from DB");
             stateTrack.Text = "Connection to the database has been closed";
         }
+
         private void StartTimer()
         {
             timer.Interval = TimeSpan.FromSeconds(3);
@@ -86,6 +73,16 @@ namespace _15_TASK
         private void StopTimer()
         {
             timer.Stop();
+        }
+
+        private async Task TaskDelay(string state = "")
+        {
+            stateTrack.Text = state;
+            Connection_Button.IsEnabled = false;
+            Disconnet_Button.IsEnabled = false;
+            await Task.Delay(1000);
+            Connection_Button.IsEnabled = true;
+            Disconnet_Button.IsEnabled = true;
         }
     }
 }
